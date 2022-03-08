@@ -4,42 +4,33 @@ const ctx = c.getContext("2d");
 let adown = false;
 let ddown = false;
 let currentAnim = 'stand';
+const multi = 8; //block size
+const groundLevel = 4;
+const jumpPower = 300
+const stepPower = 50
 
-const multi = 8;
-
+function buttonEvent(key, state) {
+    if (key === 65) { //a button
+        adown = (state === 'down')
+        Player.powerX = (state === 'down') ? (-1 * stepPower) : (ddown) ? stepPower : 0
+    }
+    if (key === 68) { //d button
+        ddown = (state === 'down')
+        Player.powerX = (state === 'down') ? stepPower : (adown) ? (-1 * stepPower) : 0
+    }
+    if ((key === 32) && (state === 'down') && !Player.fall) { //spce button - jump
+        Player.powerY = jumpPower
+    }
+}
 
 window.onkeydown = function(e) {
-    //console.log('down: '+e.keyCode);
-    // a - 65; d - 68; space - 32
-    kk = e.keyCode
-    if (kk === 65) {
-        Player.powerX = -50
-        adown = true
-    }
-    if (kk === 68) {
-        Player.powerX = 50
-        ddown = true
-    }
-
-    if (kk === 32) { //jump
-        if (!Player.fall) {
-            Player.powerY = 300
-        }
-    }
-
+    const kk = e.keyCode
+    buttonEvent(kk,'down')
 }
 
 window.onkeyup = function(e) {
-    // a - 65; d - 68; space - 32
     const kk = e.keyCode
-    if (kk === 65) {
-        adown = false
-        Player.powerX = (ddown) ? 50 : 0
-    }
-    if (kk === 68) {
-        ddown = false
-        Player.powerX = (adown) ? -50 : 0
-    }
+    buttonEvent(kk,'up')
 }
 
 const getXCoord = (x, halfX) =>  (x * multi) - (halfX * multi);
@@ -62,8 +53,7 @@ function drawPlayer() {
 
     Player.offsetX = xCoordNew - xCoord;
     Player.offsetY = yCoordNew - yCoord;
-
-    //find image we need
+    
     const image = findImageByName(currentAnim)
     ctx.drawImage(image.element, xCoord, yCoord);
 }
@@ -138,10 +128,8 @@ const t = setInterval(function() {
     //check obs and ground crossing
 
     Player.fall = true
-
-    if (Player.y < 4) {
-        //мы уже приземлились
-        Player.y = 4;
+    if (Player.y < groundLevel) { //мы уже приземлились
+        Player.y = groundLevel;
         Player.powerY = 0;
         Player.fall = false
     }
