@@ -1,6 +1,6 @@
 const Map = [];
 const ImageLibrary = [];
-const Player = {x:35, y:30, oldX:35, oldY:10, halfX:2, halfY:4, powerX:0, powerY:0, fall: false, baseX: 35, baseY: 30}
+const Player = {x:35, y:30, oldX:0, oldY:0, halfX:2, halfY:4, powerX:0, powerY:0, fall: false, baseX: 35, baseY: 30};
 
 const Brick = class {
     constructor(x, y, halfX, halfY, moving = false, movingParams = {} ) {
@@ -10,7 +10,7 @@ const Brick = class {
         this.halfY = halfY;
         this.moving = moving;
         this.movingParams = movingParams;
-        Map.push(this)
+        Map.push(this);
     }
 };
 

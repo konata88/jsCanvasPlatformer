@@ -6,55 +6,55 @@ let ddown = false;
 let currentAnim = 'stand';
 const multi = 8; //block size
 const groundLevel = 4;
-const jumpPower = 300
-const stepPower = 50
+const jumpPower = 300;
+const stepPower = 50;
 
 function buttonEvent(key, state) {
     if (key === 65) { //a button
-        adown = (state === 'down')
-        Player.powerX = (state === 'down') ? (-1 * stepPower) : (ddown) ? stepPower : 0
+        adown = (state === 'down');
+        Player.powerX = (state === 'down') ? (-1 * stepPower) : (ddown) ? stepPower : 0;
     }
     if (key === 68) { //d button
-        ddown = (state === 'down')
-        Player.powerX = (state === 'down') ? stepPower : (adown) ? (-1 * stepPower) : 0
+        ddown = (state === 'down');
+        Player.powerX = (state === 'down') ? stepPower : (adown) ? (-1 * stepPower) : 0;
     }
     if ((key === 32) && (state === 'down') && !Player.fall) { //spce button - jump
-        Player.powerY = jumpPower
+        Player.powerY = jumpPower;
     }
 }
 
 window.onkeydown = function(e) {
-    const kk = e.keyCode
-    buttonEvent(kk,'down')
+    const kk = e.keyCode;
+    buttonEvent(kk,'down');
 }
 
 window.onkeyup = function(e) {
-    const kk = e.keyCode
-    buttonEvent(kk,'up')
+    const kk = e.keyCode;
+    buttonEvent(kk,'up');
 }
 
 const getXCoord = (x, halfX) =>  (x * multi) - (halfX * multi);
 const getYCoord = (y, halfY) => (600 - (y * multi)) - (halfY * multi);
 
 function drawRect(x, y, halfX, halfY) {
-    xCoord = getXCoord(x, halfX) - Player.offsetX;
-    yCoord = getYCoord(y, halfY) - Player.offsetY;
+    const xCoord = getXCoord(x, halfX) - Player.offsetX;
+    const yCoord = getYCoord(y, halfY) - Player.offsetY;
 
     ctx.rect(xCoord, yCoord, (halfX*2) * multi, (halfY*2) * multi);
     ctx.stroke();
 }
 
 function drawPlayer() {
-    xCoord = getXCoord(Player.baseX, Player.halfX)
-    yCoord = getYCoord(Player.baseY, Player.halfY)
+    const xCoord = getXCoord(Player.baseX, Player.halfX);
+    const yCoord = getYCoord(Player.baseY, Player.halfY);
 
-    xCoordNew = getXCoord(Player.x, Player.halfX)
-    yCoordNew = getYCoord(Player.y, Player.halfY)
+    const xCoordNew = getXCoord(Player.x, Player.halfX);
+    const yCoordNew = getYCoord(Player.y, Player.halfY);
 
     Player.offsetX = xCoordNew - xCoord;
     Player.offsetY = yCoordNew - yCoord;
-    
-    const image = findImageByName(currentAnim)
+
+    const image = findImageByName(currentAnim);
     ctx.drawImage(image.element, xCoord, yCoord);
 }
 
@@ -63,8 +63,8 @@ function Render() {
     ctx.beginPath();
 
     currentAnim = adown ? 'right' : ddown ? 'left' : 'front';
-    drawPlayer()
-    Map.forEach(o => drawRect(o.x,o.y, o.halfX, o.halfY)) //draw bricks
+    drawPlayer();
+    Map.forEach(o => drawRect(o.x,o.y, o.halfX, o.halfY)); //draw bricks
 }
 
 function isCollide(other) {
@@ -74,7 +74,7 @@ function isCollide(other) {
 }
 
 function getCollideObject() {
-    return Map.find(brick => isCollide(brick))
+    return Map.find(brick => isCollide(brick));
 }
 
 async function loadImage(img) {
@@ -97,22 +97,22 @@ function findImageByName(name) {
 
 //physics cycle
 const t = setInterval(function() {
-    let collideObj
-    let moveHorisontal = 0
-    let moveVertical = 0
+    let collideObj;
+    let moveHorisontal = 0;
+    let moveVertical = 0;
     if (ImageLibrary.length !== images.length) return false; //not loaded
     if (Player.powerX !== 0) {
-        moveHorisontal = Player.powerX / 4
+        moveHorisontal = Player.powerX / 4;
     }
 
     if (moveHorisontal !== 0) {
-        Player.x = Player.x + (moveHorisontal/10)
-        collideObj = getCollideObject()
+        Player.x = Player.x + (moveHorisontal/10);
+        collideObj = getCollideObject();
 
         if (collideObj) {
-            Player.x = Player.oldX
+            Player.x = Player.oldX;
         } else {
-            Player.oldX = Player.x
+            Player.oldX = Player.x;
         }
     }
 
@@ -120,31 +120,31 @@ const t = setInterval(function() {
         Player.powerY = -50;
     }
     if (Player.powerY < -200) {   //max falling speed
-        Player.powerY = -200
+        Player.powerY = -200;
     }
 
-    moveVertical = Player.powerY / 4
-    Player.y = Player.y + (moveVertical/10)
+    moveVertical = Player.powerY / 4;
+    Player.y = Player.y + (moveVertical/10);
     //check obs and ground crossing
 
-    Player.fall = true
+    Player.fall = true;
     if (Player.y < groundLevel) { //мы уже приземлились
         Player.y = groundLevel;
         Player.powerY = 0;
-        Player.fall = false
+        Player.fall = false;
     }
 
-    collideObj = getCollideObject()
+    collideObj = getCollideObject();
     if (collideObj) {
         //мы уже приземлились
         //если мы падаем вниз
         if (moveVertical < 0) {
             Player.y = collideObj.y + collideObj.halfY + Player.halfY; //тут должны быть координаты граунда или обьекта
-            Player.fall = false
+            Player.fall = false;
         } else {
             //головой об потолок
-            Player.y = collideObj.y - collideObj.halfY - Player.halfY
-            Player.fall = true
+            Player.y = collideObj.y - collideObj.halfY - Player.halfY;
+            Player.fall = true;
         }
         Player.powerY = 0;
     }
